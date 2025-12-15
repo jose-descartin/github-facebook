@@ -1,0 +1,938 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Facebook Token Generator</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Work+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #1877f2;
+            --primary-dark: #0d5cbf;
+            --success: #42b72a;
+            --danger: #e74c3c;
+            --warning: #f39c12;
+            --bg-dark: #0a0e27;
+            --bg-medium: #1a1f3a;
+            --bg-light: #252b4a;
+            --text-primary: #ffffff;
+            --text-secondary: #a8b2d1;
+            --accent: #64ffda;
+        }
+
+        body {
+            font-family: 'Work Sans', sans-serif;
+            background: linear-gradient(135deg, var(--bg-dark) 0%, #0f1729 50%, var(--bg-medium) 100%);
+            min-height: 100vh;
+            color: var(--text-primary);
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 20% 20%, rgba(24, 119, 242, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(100, 255, 218, 0.1) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 60px;
+            animation: fadeInDown 0.8s ease-out;
+        }
+
+        h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 3.5rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--accent) 0%, var(--primary) 50%, #8b5cf6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 16px;
+            letter-spacing: -0.5px;
+        }
+
+        .subtitle {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            font-weight: 400;
+        }
+
+        .progress-container {
+            background: var(--bg-light);
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 40px;
+            border: 1px solid rgba(100, 255, 218, 0.1);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            animation: fadeIn 0.8s ease-out 0.2s both;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 999px;
+            overflow: hidden;
+            margin-bottom: 16px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+            border-radius: 999px;
+            transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 0 20px rgba(100, 255, 218, 0.5);
+        }
+
+        .progress-text {
+            text-align: center;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .step-container {
+            background: var(--bg-light);
+            border-radius: 16px;
+            padding: 40px;
+            margin-bottom: 30px;
+            border: 1px solid rgba(100, 255, 218, 0.1);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            animation: slideInUp 0.6s ease-out;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .step-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+        }
+
+        .step-number {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            border-radius: 12px;
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 16px rgba(24, 119, 242, 0.4);
+        }
+
+        .step-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 16px;
+            color: var(--text-primary);
+        }
+
+        .step-description {
+            color: var(--text-secondary);
+            line-height: 1.7;
+            margin-bottom: 24px;
+            font-size: 1rem;
+        }
+
+        .input-group {
+            margin-bottom: 24px;
+        }
+
+        label {
+            display: block;
+            color: var(--text-primary);
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 0.95rem;
+        }
+
+        input[type="text"],
+        input[type="password"],
+        textarea,
+        select {
+            width: 100%;
+            padding: 14px 18px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid rgba(100, 255, 218, 0.2);
+            border-radius: 10px;
+            color: var(--text-primary);
+            font-size: 1rem;
+            font-family: 'Work Sans', sans-serif;
+            transition: all 0.3s ease;
+        }
+
+        input[type="text"]:focus,
+        input[type="password"]:focus,
+        textarea:focus,
+        select:focus {
+            outline: none;
+            border-color: var(--accent);
+            background: rgba(100, 255, 218, 0.05);
+            box-shadow: 0 0 0 4px rgba(100, 255, 218, 0.1);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 12px;
+            margin-top: 32px;
+        }
+
+        button {
+            padding: 14px 32px;
+            font-size: 1rem;
+            font-weight: 600;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Work Sans', sans-serif;
+            position: relative;
+            overflow: hidden;
+        }
+
+        button::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        button:active::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            flex: 1;
+            box-shadow: 0 4px 16px rgba(24, 119, 242, 0.4);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 24px rgba(24, 119, 242, 0.6);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--text-primary);
+            border: 2px solid rgba(100, 255, 218, 0.3);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: var(--accent);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, var(--success), #2ecc71);
+            color: white;
+            box-shadow: 0 4px 16px rgba(66, 183, 42, 0.4);
+        }
+
+        .btn-success:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 24px rgba(66, 183, 42, 0.6);
+        }
+
+        .info-box {
+            background: rgba(100, 255, 218, 0.1);
+            border-left: 4px solid var(--accent);
+            padding: 16px 20px;
+            border-radius: 8px;
+            margin-bottom: 24px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .warning-box {
+            background: rgba(243, 156, 18, 0.1);
+            border-left: 4px solid var(--warning);
+            padding: 16px 20px;
+            border-radius: 8px;
+            margin-bottom: 24px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .token-display {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 20px;
+            border-radius: 10px;
+            border: 2px dashed rgba(100, 255, 218, 0.3);
+            margin-bottom: 24px;
+            word-break: break-all;
+            font-family: 'Courier New', monospace;
+            color: var(--accent);
+            font-size: 0.9rem;
+        }
+
+        .summary-card {
+            background: var(--bg-medium);
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 16px;
+            border: 1px solid rgba(100, 255, 218, 0.2);
+        }
+
+        .summary-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .summary-item:last-child {
+            border-bottom: none;
+        }
+
+        .summary-label {
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .summary-value {
+            color: var(--text-primary);
+            font-weight: 600;
+            text-align: right;
+            max-width: 60%;
+            word-break: break-all;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .checkmark {
+            display: inline-block;
+            width: 24px;
+            height: 24px;
+            background: var(--success);
+            border-radius: 50%;
+            margin-right: 8px;
+            position: relative;
+        }
+
+        .checkmark::after {
+            content: '✓';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .external-link {
+            color: var(--accent);
+            text-decoration: none;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            transition: all 0.3s ease;
+        }
+
+        .external-link:hover {
+            color: var(--primary);
+            gap: 8px;
+        }
+
+        .copy-btn {
+            padding: 8px 16px;
+            background: rgba(100, 255, 218, 0.2);
+            color: var(--accent);
+            border: 2px solid var(--accent);
+            border-radius: 6px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 12px;
+        }
+
+        .copy-btn:hover {
+            background: var(--accent);
+            color: var(--bg-dark);
+        }
+
+        .step-list {
+            list-style: none;
+            margin-top: 16px;
+        }
+
+        .step-list li {
+            padding: 12px 0;
+            padding-left: 32px;
+            position: relative;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .step-list li::before {
+            content: '→';
+            position: absolute;
+            left: 0;
+            color: var(--accent);
+            font-weight: bold;
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2.5rem;
+            }
+
+            .step-container {
+                padding: 24px;
+            }
+
+            .button-group {
+                flex-direction: column;
+            }
+
+            button {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Facebook Token Generator</h1>
+            <p class="subtitle">Generate long-lived access tokens with ease</p>
+        </header>
+
+        <div class="progress-container">
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+            </div>
+            <div class="progress-text" id="progressText">Step 0 of 9 - Let's get started!</div>
+        </div>
+
+        <!-- Step 0: Initial Setup -->
+        <div class="step-container" id="step0">
+            <div class="step-number">0</div>
+            <h2 class="step-title">Before We Begin</h2>
+            <p class="step-description">This wizard will guide you through generating a long-lived Facebook access token. You'll need to interact with Facebook Developer tools at various points.</p>
+            
+            <div class="info-box">
+                <strong>📋 What you'll need:</strong>
+                <ul class="step-list">
+                    <li>Access to Facebook Developer Console</li>
+                    <li>A Facebook page you want to manage</li>
+                    <li>About 10-15 minutes of your time</li>
+                </ul>
+            </div>
+
+            <div class="warning-box">
+                <strong>⚠️ Important:</strong> Keep this window open while completing steps in Facebook Developer Console. You'll return here to paste tokens and continue.
+            </div>
+
+            <div class="button-group">
+                <button class="btn-primary" onclick="nextStep()">Start Setup →</button>
+            </div>
+        </div>
+
+        <!-- Step 1: Create App -->
+        <div class="step-container hidden" id="step1">
+            <div class="step-number">1</div>
+            <h2 class="step-title">Create Facebook App</h2>
+            <p class="step-description">Let's create a new Facebook app in the Developer Console.</p>
+            
+            <div class="info-box">
+                <strong>Follow these steps:</strong>
+                <ul class="step-list">
+                    <li>Go to <a href="https://developers.facebook.com/apps" target="_blank" class="external-link">Facebook Developers →</a></li>
+                    <li>Click "Create App"</li>
+                    <li>Type your desired App name</li>
+                    <li>Click "Next"</li>
+                </ul>
+            </div>
+
+            <div class="input-group">
+                <label for="appName">App Name (for your reference)</label>
+                <input type="text" id="appName" placeholder="e.g., My Content Manager">
+            </div>
+
+            <div class="button-group">
+                <button class="btn-secondary" onclick="prevStep()">← Back</button>
+                <button class="btn-primary" onclick="nextStep()">Continue →</button>
+            </div>
+        </div>
+
+        <!-- Step 2: App Configuration -->
+        <div class="step-container hidden" id="step2">
+            <div class="step-number">2</div>
+            <h2 class="step-title">Configure App Settings</h2>
+            <p class="step-description">Select the correct use case and permissions.</p>
+            
+            <div class="info-box">
+                <strong>In the Facebook Developer Console:</strong>
+                <ul class="step-list">
+                    <li>Select "Content management"</li>
+                    <li>Select "Manage everything on your Page"</li>
+                    <li>Click "Next"</li>
+                </ul>
+            </div>
+
+            <div class="button-group">
+                <button class="btn-secondary" onclick="prevStep()">← Back</button>
+                <button class="btn-primary" onclick="nextStep()">Continue →</button>
+            </div>
+        </div>
+
+        <!-- Step 3: Portfolio Setup -->
+        <div class="step-container hidden" id="step3">
+            <div class="step-number">3</div>
+            <h2 class="step-title">Create Portfolio & Add Page</h2>
+            <p class="step-description">Create a portfolio and link your Facebook page.</p>
+            
+            <div class="info-box">
+                <strong>Follow these steps:</strong>
+                <ul class="step-list">
+                    <li>Create a new Portfolio</li>
+                    <li>Add your Facebook page to the portfolio</li>
+                    <li>Click "Add Page" to confirm</li>
+                    <li>Select the created portfolio</li>
+                    <li>Click "Next" to finish app creation</li>
+                    <li>Click "Go to dashboard"</li>
+                </ul>
+            </div>
+
+            <div class="input-group">
+                <label for="portfolioName">Portfolio Name (for your reference)</label>
+                <input type="text" id="portfolioName" placeholder="e.g., My Business Portfolio">
+            </div>
+
+            <div class="button-group">
+                <button class="btn-secondary" onclick="prevStep()">← Back</button>
+                <button class="btn-primary" onclick="nextStep()">Continue →</button>
+            </div>
+        </div>
+
+        <!-- Step 4: Permissions -->
+        <div class="step-container hidden" id="step4">
+            <div class="step-number">4</div>
+            <h2 class="step-title">Configure Permissions</h2>
+            <p class="step-description">Set up the required API permissions.</p>
+            
+            <div class="info-box">
+                <strong>In the Developer Console:</strong>
+                <ul class="step-list">
+                    <li>Click "Use cases"</li>
+                    <li>Click "Customize"</li>
+                    <li>Select: pages_manage_posts, pages_read_engagement, pages_show_list</li>
+                    <li>Click "Tools" → "Graph API Explorer"</li>
+                    <li>Select your app from the dropdown</li>
+                    <li>Click "Add a Permission" → "Events Groups Pages"</li>
+                    <li>Select all the permissions that appear</li>
+                </ul>
+            </div>
+
+            <div class="button-group">
+                <button class="btn-secondary" onclick="prevStep()">← Back</button>
+                <button class="btn-primary" onclick="nextStep()">Continue →</button>
+            </div>
+        </div>
+
+        <!-- Step 5: Generate User Token -->
+        <div class="step-container hidden" id="step5">
+            <div class="step-number">5</div>
+            <h2 class="step-title">Generate User Access Token</h2>
+            <p class="step-description">Generate your first access token.</p>
+            
+            <div class="info-box">
+                <strong>In Graph API Explorer:</strong>
+                <ul class="step-list">
+                    <li>Click "Generate Access Token"</li>
+                    <li>Click "Continue as [Your Name]"</li>
+                    <li>Select the page(s) where content will be posted</li>
+                    <li>Select your created portfolio</li>
+                    <li>Click "Save"</li>
+                    <li>Click "Got it"</li>
+                    <li>Copy the generated user access token</li>
+                </ul>
+            </div>
+
+            <div class="input-group">
+                <label for="userToken">Paste User Access Token</label>
+                <textarea id="userToken" placeholder="Paste the token here..."></textarea>
+            </div>
+
+            <div class="button-group">
+                <button class="btn-secondary" onclick="prevStep()">← Back</button>
+                <button class="btn-primary" onclick="nextStep()">Continue →</button>
+            </div>
+        </div>
+
+        <!-- Step 6: App Credentials -->
+        <div class="step-container hidden" id="step6">
+            <div class="step-number">6</div>
+            <h2 class="step-title">Publish App & Get Credentials</h2>
+            <p class="step-description">Publish your app and retrieve credentials.</p>
+            
+            <div class="info-box">
+                <strong>Follow these steps:</strong>
+                <ul class="step-list">
+                    <li>In Dashboard, click "Publish"</li>
+                    <li>Fill out required sections and create necessary files</li>
+                    <li>Click "Save Changes" then "Publish"</li>
+                    <li>Copy your App ID and App Secret (click "Show" to view)</li>
+                </ul>
+            </div>
+
+            <div class="input-group">
+                <label for="appId">App ID</label>
+                <input type="text" id="appId" placeholder="e.g., 1359773062506617">
+            </div>
+
+            <div class="input-group">
+                <label for="appSecret">App Secret</label>
+                <input type="password" id="appSecret" placeholder="Click 'Show' in FB console and paste here">
+            </div>
+
+            <div class="button-group">
+                <button class="btn-secondary" onclick="prevStep()">← Back</button>
+                <button class="btn-primary" onclick="nextStep()">Continue →</button>
+            </div>
+        </div>
+
+        <!-- Step 7: OAuth Settings -->
+        <div class="step-container hidden" id="step7">
+            <div class="step-number">7</div>
+            <h2 class="step-title">Configure OAuth Settings</h2>
+            <p class="step-description">Add redirect URIs for authentication.</p>
+            
+            <div class="info-box">
+                <strong>In the Developer Console:</strong>
+                <ul class="step-list">
+                    <li>Click "Facebook Login for Business" → "Settings"</li>
+                    <li>Add Valid OAuth Redirect URIs</li>
+                    <li>Click "Save Changes"</li>
+                </ul>
+            </div>
+
+            <div class="warning-box">
+                <strong>Typical redirect URIs:</strong> https://yourdomain.com/callback or http://localhost:3000/callback for testing
+            </div>
+
+            <div class="button-group">
+                <button class="btn-secondary" onclick="prevStep()">← Back</button>
+                <button class="btn-primary" onclick="nextStep()">Continue →</button>
+            </div>
+        </div>
+
+        <!-- Step 8: Convert to Page Token -->
+        <div class="step-container hidden" id="step8">
+            <div class="step-number">8</div>
+            <h2 class="step-title">Generate Page Access Token</h2>
+            <p class="step-description">Convert your user token to a page token.</p>
+            
+            <div class="info-box">
+                <strong>Follow these steps:</strong>
+                <ul class="step-list">
+                    <li>Go back to <a href="https://developers.facebook.com/tools/explorer" target="_blank" class="external-link">Graph API Explorer →</a></li>
+                    <li>Click "Page Access Token" dropdown</li>
+                    <li>Select your Facebook page name</li>
+                    <li>A page access token will be generated</li>
+                    <li>Copy this token</li>
+                </ul>
+            </div>
+
+            <div class="input-group">
+                <label for="pageToken">Paste Page Access Token</label>
+                <textarea id="pageToken" placeholder="Paste the page token here..."></textarea>
+            </div>
+
+            <div class="input-group">
+                <label for="pageId">Facebook Page ID</label>
+                <input type="text" id="pageId" placeholder="e.g., 882491904951550">
+            </div>
+
+            <div class="button-group">
+                <button class="btn-secondary" onclick="prevStep()">← Back</button>
+                <button class="btn-primary" onclick="nextStep()">Continue →</button>
+            </div>
+        </div>
+
+        <!-- Step 9: Extend Token -->
+        <div class="step-container hidden" id="step9">
+            <div class="step-number">9</div>
+            <h2 class="step-title">Generate Long-Lived Token</h2>
+            <p class="step-description">Convert to a long-lived token that never expires.</p>
+            
+            <div class="info-box">
+                <strong>Final steps:</strong>
+                <ul class="step-list">
+                    <li>Go to <a href="https://developers.facebook.com/tools/debug/accesstoken/" target="_blank" class="external-link">Access Token Debugger →</a></li>
+                    <li>Paste your page token and click "Debug"</li>
+                    <li>Click "Extend Access Token"</li>
+                    <li>Copy the new long-lived token that appears below</li>
+                    <li>Click "Debug" again to verify it shows "Expires: Never"</li>
+                </ul>
+            </div>
+
+            <div class="input-group">
+                <label for="longLivedToken">Paste Long-Lived Page Access Token</label>
+                <textarea id="longLivedToken" placeholder="Paste the final long-lived token here..."></textarea>
+            </div>
+
+            <div class="button-group">
+                <button class="btn-secondary" onclick="prevStep()">← Back</button>
+                <button class="btn-success" onclick="generateSummary()">Complete Setup ✓</button>
+            </div>
+        </div>
+
+        <!-- Summary -->
+        <div class="step-container hidden" id="summary">
+            <div class="step-number">✓</div>
+            <h2 class="step-title">Setup Complete!</h2>
+            <p class="step-description">Here are your Facebook API credentials. Save these securely!</p>
+            
+            <div class="summary-card">
+                <div class="summary-item">
+                    <span class="summary-label">App Name:</span>
+                    <span class="summary-value" id="summaryAppName">-</span>
+                </div>
+                <div class="summary-item">
+                    <span class="summary-label">App ID:</span>
+                    <span class="summary-value" id="summaryAppId">-</span>
+                </div>
+                <div class="summary-item">
+                    <span class="summary-label">App Secret:</span>
+                    <span class="summary-value" id="summaryAppSecret">••••••••</span>
+                </div>
+                <div class="summary-item">
+                    <span class="summary-label">Page ID:</span>
+                    <span class="summary-value" id="summaryPageId">-</span>
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label for="finalToken">Your Long-Lived Page Access Token:</label>
+                <div class="token-display" id="finalToken">-</div>
+                <button class="copy-btn" onclick="copyToken()">📋 Copy Token</button>
+            </div>
+
+            <div class="info-box">
+                <strong>✅ What's next?</strong>
+                <ul class="step-list">
+                    <li>Save these credentials in a secure location</li>
+                    <li>Use the Page ID and Long-Lived Token in your application</li>
+                    <li>This token never expires unless you regenerate it</li>
+                </ul>
+            </div>
+
+            <div class="button-group">
+                <button class="btn-secondary" onclick="downloadCredentials()">💾 Download Credentials</button>
+                <button class="btn-primary" onclick="resetWizard()">Start Over</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentStep = 0;
+        const totalSteps = 9;
+
+        function updateProgress() {
+            const progress = (currentStep / totalSteps) * 100;
+            document.getElementById('progressFill').style.width = progress + '%';
+            document.getElementById('progressText').textContent = `Step ${currentStep} of ${totalSteps}`;
+        }
+
+        function showStep(step) {
+            // Hide all steps
+            for (let i = 0; i <= totalSteps; i++) {
+                const stepElement = document.getElementById('step' + i);
+                if (stepElement) {
+                    stepElement.classList.add('hidden');
+                }
+            }
+            document.getElementById('summary').classList.add('hidden');
+
+            // Show current step
+            const currentStepElement = document.getElementById('step' + step);
+            if (currentStepElement) {
+                currentStepElement.classList.remove('hidden');
+                currentStepElement.style.animation = 'none';
+                setTimeout(() => {
+                    currentStepElement.style.animation = 'slideInUp 0.6s ease-out';
+                }, 10);
+            }
+
+            // Scroll to top
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function nextStep() {
+            if (currentStep < totalSteps) {
+                currentStep++;
+                updateProgress();
+                showStep(currentStep);
+            }
+        }
+
+        function prevStep() {
+            if (currentStep > 0) {
+                currentStep--;
+                updateProgress();
+                showStep(currentStep);
+            }
+        }
+
+        function generateSummary() {
+            // Collect all data
+            const appName = document.getElementById('appName').value || 'Not provided';
+            const appId = document.getElementById('appId').value || 'Not provided';
+            const appSecret = document.getElementById('appSecret').value || 'Not provided';
+            const pageId = document.getElementById('pageId').value || 'Not provided';
+            const longLivedToken = document.getElementById('longLivedToken').value || 'Not provided';
+
+            // Populate summary
+            document.getElementById('summaryAppName').textContent = appName;
+            document.getElementById('summaryAppId').textContent = appId;
+            document.getElementById('summaryAppSecret').textContent = appSecret.substring(0, 8) + '••••••••';
+            document.getElementById('summaryPageId').textContent = pageId;
+            document.getElementById('finalToken').textContent = longLivedToken;
+
+            // Show summary
+            document.getElementById('step' + currentStep).classList.add('hidden');
+            document.getElementById('summary').classList.remove('hidden');
+            
+            // Update progress to 100%
+            document.getElementById('progressFill').style.width = '100%';
+            document.getElementById('progressText').textContent = 'Setup Complete! 🎉';
+        }
+
+        function copyToken() {
+            const token = document.getElementById('finalToken').textContent;
+            navigator.clipboard.writeText(token).then(() => {
+                const btn = event.target;
+                const originalText = btn.textContent;
+                btn.textContent = '✓ Copied!';
+                btn.style.background = 'var(--success)';
+                btn.style.color = 'white';
+                setTimeout(() => {
+                    btn.textContent = originalText;
+                    btn.style.background = '';
+                    btn.style.color = '';
+                }, 2000);
+            });
+        }
+
+        function downloadCredentials() {
+            const credentials = {
+                app_name: document.getElementById('appName').value,
+                app_id: document.getElementById('appId').value,
+                app_secret: document.getElementById('appSecret').value,
+                page_id: document.getElementById('pageId').value,
+                long_lived_token: document.getElementById('longLivedToken').value,
+                generated_at: new Date().toISOString()
+            };
+
+            const blob = new Blob([JSON.stringify(credentials, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'facebook_credentials.json';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        function resetWizard() {
+            if (confirm('Are you sure you want to start over? All entered data will be lost.')) {
+                // Clear all inputs
+                document.querySelectorAll('input, textarea').forEach(input => input.value = '');
+                
+                // Reset to step 0
+                currentStep = 0;
+                updateProgress();
+                showStep(0);
+            }
+        }
+
+        // Initialize
+        updateProgress();
+        showStep(0);
+    </script>
+</body>
+</html>
